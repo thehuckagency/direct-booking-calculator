@@ -12,12 +12,27 @@ function Headline({ value }: { value: number }) {
   );
 }
 
-function StatCard({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "gain" }) {
+function StatCard({
+  label,
+  value,
+  unit,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  tone?: "default" | "gain";
+}) {
   return (
-    <div className="rounded-xl border border-sage/60 bg-surface px-4 py-3.5">
-      <p className="text-[12.5px] font-medium uppercase tracking-[0.04em] text-muted">{label}</p>
-      <p className={`tabular mt-1 text-[22px] font-semibold leading-tight ${tone === "gain" ? "text-gain" : "text-ink"}`}>
+    <div className="min-w-0 rounded-xl border border-sage/60 bg-surface px-3.5 py-3.5">
+      <p className="text-[11.5px] font-medium uppercase tracking-[0.03em] text-muted">{label}</p>
+      <p
+        className={`tabular mt-1 flex flex-wrap items-baseline text-[clamp(0.95rem,4.4vw,1.2rem)] font-semibold leading-tight ${
+          tone === "gain" ? "text-gain" : "text-ink"
+        }`}
+      >
         {value}
+        {unit ? <span className="ml-0.5 text-[0.7em] font-medium text-muted">{unit}</span> : null}
       </p>
     </div>
   );
@@ -89,9 +104,9 @@ export function Results({
 
       {/* Supporting stat cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <StatCard label="Paid to OTAs now" value={`${money(result.currentCommissionCost)}/yr`} />
-        <StatCard label="Recovered monthly" value={`${money(result.monthlyRecovery)}`} tone="gain" />
-        <StatCard label="Over 3 years" value={`${money(result.threeYearRecovery)}`} tone="gain" />
+        <StatCard label="Paid to OTAs now" value={money(result.currentCommissionCost)} unit="/yr" />
+        <StatCard label="Recovered monthly" value={money(result.monthlyRecovery)} tone="gain" />
+        <StatCard label="Over 3 years" value={money(result.threeYearRecovery)} tone="gain" />
       </div>
 
       {/* Comparison chart */}

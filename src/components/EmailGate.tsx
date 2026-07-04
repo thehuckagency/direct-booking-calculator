@@ -33,13 +33,14 @@ export interface LeadPayload {
 function buildPayload(
   inputs: RecoveryInputs,
   result: RecoveryResult,
-  contact: { email: string; hotelName: string; name: string; consent: boolean },
+  contact: { email: string; hotelName: string; name: string },
 ): LeadPayload {
   return {
     email: contact.email.trim(),
     hotelName: contact.hotelName.trim(),
     name: contact.name.trim(),
-    consent: contact.consent,
+    // Consent is given by submitting the form (passive notice under the field).
+    consent: true,
     revenuePath: inputs.path,
     adr: inputs.adr,
     monthlyRoomNights: result.monthlyRoomNights,
@@ -72,7 +73,6 @@ export function EmailGate({
   const [email, setEmail] = useState("");
   const [hotelName, setHotelName] = useState("");
   const [name, setName] = useState("");
-  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -83,12 +83,8 @@ export function EmailGate({
       setError("Please enter a valid work email so we can send your report.");
       return;
     }
-    if (!consent) {
-      setError("Please tick the consent box so we can send your report.");
-      return;
-    }
 
-    const payload = buildPayload(inputs, result, { email, hotelName, name, consent });
+    const payload = buildPayload(inputs, result, { email, hotelName, name });
     setStatus("sending");
     try {
       if (LEAD_WEBHOOK_URL) {
@@ -204,26 +200,18 @@ export function EmailGate({
         </div>
       </div>
 
-      <label className="mt-4 flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-muted">
-        <input
-          type="checkbox"
-          className="focus-ring mt-0.5 h-[18px] w-[18px] shrink-0 rounded border-sage accent-ink"
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-        />
-        <span>
-          I agree to Huck contacting me about my results and storing my details per the{" "}
-          <a
-            href={PRIVACY_POLICY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-ink underline underline-offset-2 hover:text-gain"
-          >
-            privacy policy
-          </a>
-          .
-        </span>
-      </label>
+      <p className="mt-4 text-[13px] leading-snug text-muted">
+        By requesting your report you agree to Huck contacting you about your results, per our{" "}
+        <a
+          href={PRIVACY_POLICY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-ink underline underline-offset-2 hover:text-gain"
+        >
+          privacy policy
+        </a>
+        .
+      </p>
 
       {error && (
         <p role="alert" className="mt-3 text-[13.5px] font-medium text-ink">
