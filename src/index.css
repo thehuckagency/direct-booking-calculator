@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  /* Numbers line up in the result panel */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer components {
+  /* Range slider — restyled to sit on brand, keyboard-operable by default */
+  .range {
+    @apply h-1.5 w-full cursor-pointer appearance-none rounded-full bg-surface-sunk outline-none;
+    accent-color: #1a2922;
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 26px;
+    width: 26px;
+    border-radius: 9999px;
+    background: #1a2922;
+    border: 3px solid #f2f7f4;
+    box-shadow: 0 2px 8px -2px rgba(26, 41, 34, 0.45);
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .range::-webkit-slider-thumb:hover {
+    transform: scale(1.08);
+  }
+  .range:focus-visible::-webkit-slider-thumb {
+    outline: 3px solid #2c6e49;
+    outline-offset: 2px;
+  }
+  .range::-moz-range-thumb {
+    height: 26px;
+    width: 26px;
+    border-radius: 9999px;
+    background: #1a2922;
+    border: 3px solid #f2f7f4;
+    box-shadow: 0 2px 8px -2px rgba(26, 41, 34, 0.45);
+    cursor: pointer;
+  }
+  .range::-moz-range-progress {
+    background: #617a6d;
+    height: 6px;
+    border-radius: 9999px;
+  }
+  .range:focus-visible::-moz-range-thumb {
+    outline: 3px solid #2c6e49;
+    outline-offset: 2px;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-sage/70 bg-surface px-4 py-3 text-ink outline-none transition
+           placeholder:text-muted/60 focus:border-ink focus:ring-2 focus:ring-ink/15;
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25 focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
+  }
+}
+
+/* Motion is opt-in to being removed */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
