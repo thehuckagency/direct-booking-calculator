@@ -96,6 +96,34 @@ The `email` field is the required, validated one; `hotelName` and `name` are opt
 records the GDPR checkbox. `rooms` / `occupancy` are always sent but are only meaningful when
 `revenuePath` is `"B"`.
 
+The fields are sent **form-encoded** (`application/x-www-form-urlencoded`) in `no-cors` mode. That
+is a simple browser request (no CORS preflight) and every field arrives as its own named value, so
+a Zapier Catch Hook, Apps Script, or CRM splits them into columns automatically. Because the
+response is opaque under `no-cors`, the UI treats a request that completes without a network error
+as delivered — it can't read a status code back.
+
+## Storing leads
+
+Set `VITE_LEAD_WEBHOOK_URL` to any webhook that accepts a form POST, then redeploy on Vercel.
+
+### Option A — Zapier (into a Zapier Table, Sheet, or CRM)
+
+1. In Zapier, create a Zap. Trigger: **Webhooks by Zapier → Catch Hook**. Copy the custom URL.
+   (Webhooks by Zapier needs a paid Zapier plan.)
+2. Set `VITE_LEAD_WEBHOOK_URL` to that URL in Vercel → **redeploy** → submit one test lead so
+   Zapier learns the fields.
+3. Add an action: **Zapier Tables → Create Record** (or Google Sheets, HubSpot, etc.) and map the
+   fields. Turn the Zap on.
+
+### Option B — Google Sheet via Apps Script (no third party)
+
+Bound Apps Script web app, script in [`apps-script/Code.gs`](apps-script/Code.gs) with setup steps
+at the top: paste it into a Sheet's Apps Script editor, deploy as a **Web app** (execute as **Me**,
+access **Anyone**), and use the `/exec` URL as `VITE_LEAD_WEBHOOK_URL`. Each field becomes a column
+(order set by `COLUMNS` in the script).
+
+Either way the payload fields are identical — the field names above are the column/field keys.
+
 ## Brand notes
 
 Huck greens on cool paper (`#E6EFEB` bg, `#1A2922` ink). Headings use **Fraunces** as a stand-in

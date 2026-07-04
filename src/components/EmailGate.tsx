@@ -92,12 +92,20 @@ export function EmailGate({
     setStatus("sending");
     try {
       if (LEAD_WEBHOOK_URL) {
-        const res = await fetch(LEAD_WEBHOOK_URL, {
+        // Sent as form-encoded fields in no-cors mode. This is the "just works
+        // from a browser" path: it's a simple request (no CORS preflight), and
+        // a Zapier Catch Hook, Google Apps Script, or most webhooks split each
+        // field into its own column automatically. The response is opaque under
+        // no-cors, so a fetch that completes without a network error is treated
+        // as delivered (we can't read a status code back).
+        const form = new URLSearchParams();
+        Object.entries(payload).forEach(([key, value]) => form.append(key, String(value)));
+        await fetch(LEAD_WEBHOOK_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: form.toString(),
         });
-        if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
       } else {
         // No webhook configured (e.g. local preview): surface the payload.
         // eslint-disable-next-line no-console
